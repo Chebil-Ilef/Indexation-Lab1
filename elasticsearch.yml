@@ -1,0 +1,14 @@
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+
+# ----------------------- DISABLE SECURITY FOR HTTP MODE -----------------------
+# Disable all security features (no login, no TLS)
+xpack.security.enabled: false
+xpack.security.enrollment.enabled: false
+
+# Disable HTTPS for Elasticsearch REST API
+xpack.security.http.ssl.enabled: false
+
+# Disable TLS between nodes (safe for single-node)
+xpack.security.transport.ssl.enabled: false
+# -------------------------------------------------------------------------------
