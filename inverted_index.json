@@ -1,0 +1,265 @@
+{
+  "allow": [
+    17
+  ],
+  "base": [
+    10
+  ],
+  "capture": [
+    15
+  ],
+  "common": [
+    5,
+    13
+  ],
+  "compute": [
+    6
+  ],
+  "concept": [
+    4
+  ],
+  "corpus": [
+    7,
+    19
+  ],
+  "document": [
+    0,
+    1,
+    6,
+    13,
+    14,
+    19
+  ],
+  "downweight": [
+    13
+  ],
+  "embedding": [
+    15
+  ],
+  "engine": [
+    4
+  ],
+  "evaluation": [
+    16
+  ],
+  "expansion": [
+    11
+  ],
+  "feedback": [
+    17
+  ],
+  "find": [
+    0
+  ],
+  "form": [
+    10
+  ],
+  "frequency": [
+    12,
+    13
+  ],
+  "great": [
+    3
+  ],
+  "help": [
+    13
+  ],
+  "illustrative": [
+    7
+  ],
+  "important": [
+    12
+  ],
+  "improve": [
+    11
+  ],
+  "include": [
+    2,
+    9
+  ],
+  "increasingly": [
+    18
+  ],
+  "index": [
+    1
+  ],
+  "indexation": [
+    4
+  ],
+  "individual": [
+    8
+  ],
+  "information": [
+    0
+  ],
+  "inverse": [
+    13
+  ],
+  "invert": [
+    1
+  ],
+  "ir": [
+    16
+  ],
+  "key": [
+    4
+  ],
+  "language": [
+    3,
+    18
+  ],
+  "last": [
+    19
+  ],
+  "lemmatization": [
+    10
+  ],
+  "like": [
+    16
+  ],
+  "lowercase": [
+    9
+  ],
+  "map": [
+    1
+  ],
+  "may": [
+    9
+  ],
+  "metric": [
+    16
+  ],
+  "model": [
+    12,
+    14,
+    18
+  ],
+  "normalization": [
+    2,
+    9
+  ],
+  "often": [
+    5
+  ],
+  "point": [
+    14
+  ],
+  "precision": [
+    16
+  ],
+  "preprocessing": [
+    2
+  ],
+  "processing": [
+    3
+  ],
+  "punctuation": [
+    9
+  ],
+  "python": [
+    3
+  ],
+  "query": [
+    11,
+    17
+  ],
+  "rank": [
+    12
+  ],
+  "recall": [
+    16
+  ],
+  "reduce": [
+    10
+  ],
+  "refine": [
+    17
+  ],
+  "relationship": [
+    15
+  ],
+  "relevance": [
+    17
+  ],
+  "relevant": [
+    0
+  ],
+  "remove": [
+    5,
+    9
+  ],
+  "represent": [
+    14
+  ],
+  "result": [
+    11
+  ],
+  "retrieval": [
+    0
+  ],
+  "search": [
+    4,
+    11,
+    18
+  ],
+  "semantic": [
+    15
+  ],
+  "similarity": [
+    6
+  ],
+  "small": [
+    7
+  ],
+  "space": [
+    14
+  ],
+  "split": [
+    8
+  ],
+  "stem": [
+    10
+  ],
+  "stopword": [
+    5
+  ],
+  "system": [
+    16
+  ],
+  "term": [
+    1,
+    12,
+    13
+  ],
+  "text": [
+    2,
+    3,
+    8
+  ],
+  "tiny": [
+    19
+  ],
+  "tokenization": [
+    2,
+    8
+  ],
+  "use": [
+    6,
+    7,
+    16,
+    18
+  ],
+  "user": [
+    17
+  ],
+  "vector": [
+    6,
+    14
+  ],
+  "word": [
+    5,
+    8,
+    10,
+    15
+  ]
+}
