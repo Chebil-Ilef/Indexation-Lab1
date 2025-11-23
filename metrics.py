@@ -3,6 +3,7 @@ from typing import Any, Set
 
 def deep_size(obj: Any, seen: Set[int] | None = None) -> int:
 
+    # approximate total memory usage
     if seen is None:
         seen = set()
 
@@ -11,7 +12,7 @@ def deep_size(obj: Any, seen: Set[int] | None = None) -> int:
         return 0
     seen.add(obj_id)
 
-    size = sys.getsizeof(obj)
+    size = sys.getsizeof(obj) #size of container of object
 
     if isinstance(obj, dict):
         for k, v in obj.items():
@@ -24,6 +25,7 @@ def deep_size(obj: Any, seen: Set[int] | None = None) -> int:
     return size
 
 def format_bytes(num_bytes: int) -> str:
+    
     for unit in ["B", "KB", "MB", "GB"]:
         if num_bytes < 1024:
             return f"{num_bytes:.2f} {unit}"

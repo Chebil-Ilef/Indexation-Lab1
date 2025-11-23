@@ -1,5 +1,5 @@
 from collections import defaultdict
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 from typing import Dict, List, Set, Tuple
 
 DocPair = Tuple[int, List[str]]
@@ -20,8 +20,7 @@ def _merge_indexes(base: IndexType, other: IndexType) -> None:
 
 def build_inverted_index_parallel(preprocessed_docs: List[List[str]], n_workers: int | None = None) -> Dict[str, List[int]]:
 
-    if n_workers is None:
-        n_workers = cpu_count()
+    n_workers= 4
 
     print(f"Building inverted index using {n_workers} workers...")
 

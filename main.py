@@ -1,8 +1,5 @@
-# main.py
 import time
-
-from preprocessing import get_preprocessed_corpus
-from indexing import build_inverted_index
+from preprocess_build_index import get_preprocessed_corpus, build_inverted_index
 from parallel_indexing import build_inverted_index_parallel
 from compression import compress_index, decompress_index
 from maintenance import add_document, remove_document
@@ -11,18 +8,14 @@ from metrics import deep_size, format_bytes
 def main():
     preprocessed_corpus = get_preprocessed_corpus()
 
-    # ===========================
-    # 1) Sequential indexing
-    # ===========================
+    # sequential indexing
     t0 = time.perf_counter()
     index_seq = build_inverted_index(preprocessed_corpus)
     t1 = time.perf_counter()
     seq_time = t1 - t0
     print(f"[Sequential] Index built in {seq_time:.6f} seconds")
 
-    # ===========================
-    # 2) Parallel indexing
-    # ===========================
+    # parallel indexing
     t0 = time.perf_counter()
     index_par = build_inverted_index_parallel(preprocessed_corpus)
     t1 = time.perf_counter()
@@ -32,9 +25,7 @@ def main():
     # sanity check: same result?
     print(f"Sequential == Parallel index ? {index_seq == index_par}")
 
-    # ===========================
-    # 3) Compression vs size
-    # ===========================
+    # compression vs size
     size_before = deep_size(index_seq)
     compressed_index = compress_index(index_seq)
     size_after = deep_size(compressed_index)
@@ -47,9 +38,7 @@ def main():
     decompressed = decompress_index(compressed_index)
     print(f"Index recovered after decompression ? {decompressed == index_seq}")
 
-    # ===========================
-    # 4) Maintenance example
-    # ===========================
+    # maintenance example
     print("\n[Maintenance]")
 
     new_doc_id = len(preprocessed_corpus)
@@ -60,9 +49,7 @@ def main():
     print("Removing doc 0 from index...")
     remove_document(index_seq, 0)
 
-    # ===========================
-    # 5) Simple discussion output
-    # ===========================
+    # simple discussion output
     print("\n[Discussion]")
     print(f"- Parallelization speedup (seq/par): "
           f"{seq_time:.6f} / {par_time:.6f} (ratio ~ {seq_time / par_time if par_time > 0 else 'N/A'})")

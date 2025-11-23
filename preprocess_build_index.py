@@ -62,6 +62,8 @@ def preprocess(text: str):
 
 preprocessed_corpus = [preprocess(doc) for doc in corpus]
 
+def get_preprocessed_corpus():
+    return preprocessed_corpus
 
 def build_inverted_index(preprocessed_docs):
     
