@@ -25,16 +25,16 @@ def vbyte_encode_number(n: int) -> List[int]:
     if n < 0:
         raise ValueError("VByte only supports non-negative integers")
 
-    bytes_ = [n & 0x7F]  # take 7 least significant bits
-    n >>= 7
-
-    # prepend groups of 7 bits while there are still bits left
-    while n > 0:
-        bytes_.insert(0, n & 0x7F)
+    bytes_ = []
+    
+    # Encode in little-endian: least significant bits first
+    while n >= 128:
+        bytes_.append(n & 0x7F)  # Take 7 bits, keep MSB=0 (continuation)
         n >>= 7
-
-    # set continuation bit (MSB = 1) on last byte
-    bytes_[-1] |= 0x80
+    
+    # Last byte: set MSB=1 to mark end
+    bytes_.append(n | 0x80)
+    
     # returns a list of bytes (ints in [0, 255])
     return bytes_
 
@@ -43,16 +43,21 @@ def vbyte_decode_stream(byte_list: List[int]) -> List[int]:
 
     numbers: List[int] = []
     current = 0
+    shift = 0
 
     for b in byte_list:
-        # append 7 bits
-        current = (current << 7) | (b & 0x7F)
+        # Extract 7 bits and place them at the correct position (little-endian)
+        current |= (b & 0x7F) << shift
+        
         # if MSB is 1, this is the last byte of the number
         if b & 0x80:
             numbers.append(current)
             current = 0
+            shift = 0
+        else:
+            shift += 7
 
-    if current != 0:
+    if shift != 0:
         raise ValueError("Incomplete VByte stream")
 
     return numbers

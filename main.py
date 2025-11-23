@@ -29,10 +29,16 @@ def main():
     size_before = deep_size(index_seq)
     compressed_index = compress_index(index_seq)
     size_after = deep_size(compressed_index)
+    
+    actual_before = sum(len(postings) * 4 for postings in index_seq.values())  # 4 bytes per int minimum
+    actual_after = sum(len(byte_list) for byte_list in compressed_index.values())  # raw bytes
 
     print("\n[Memory]")
-    print(f"Size before compression : {format_bytes(size_before)}")
-    print(f"Size after  compression : {format_bytes(size_after)}")
+    print(f"Size before compression : {format_bytes(size_before)} (Python objects)")
+    print(f"Size after  compression : {format_bytes(size_after)} (Python objects)")
+    print(f"Actual data size before : {actual_before} bytes (uncompressed integers)")
+    print(f"Actual data size after  : {actual_after} bytes (VByte compressed)")
+    print(f"Compression ratio       : {actual_before / actual_after:.2f}x")
 
     # optional sanity check
     decompressed = decompress_index(compressed_index)
@@ -48,15 +54,6 @@ def main():
 
     print("Removing doc 0 from index...")
     remove_document(index_seq, 0)
-
-    # simple discussion output
-    print("\n[Discussion]")
-    print(f"- Parallelization speedup (seq/par): "
-          f"{seq_time:.6f} / {par_time:.6f} (ratio ~ {seq_time / par_time if par_time > 0 else 'N/A'})")
-    print("- Compression reduces memory usage but requires extra CPU time "
-          "for compression/decompression (space/time tradeoff).")
-    print("- Parallel indexing improves indexing time but adds overhead for "
-          "process creation and merging partial indexes.")
 
 if __name__ == "__main__":
     main()
