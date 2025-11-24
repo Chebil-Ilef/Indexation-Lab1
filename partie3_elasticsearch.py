@@ -1,13 +1,6 @@
 """
 Partie 3: Indexation avec Elasticsearch
 
-Ce script:
-1. Crée un index Elasticsearch avec un analyzer personnalisé
-2. Visualise et commente _analyze, _segments, _stats
-3. Mesure le temps d'indexation avec 1, 2, 4 shards
-4. Mesure la taille disque avant/après _forcemerge
-5. Compare avec l'indexation manuelle en Python
-6. Discute de la gestion de la compression, maintenance et parallélisation
 """
 
 import time
@@ -21,8 +14,8 @@ from metrics import format_bytes
 
 
 # Configuration Elasticsearch
-ES_HOST = os.getenv("ELASTICSEARCH_HOST", "localhost")
-ES_PORT = int(os.getenv("ELASTICSEARCH_PORT", "9200"))
+ES_HOST = "localhost"
+ES_PORT = int("9200")
 ES_URL = f"http://{ES_HOST}:{ES_PORT}"
 
 # Connexion à Elasticsearch
@@ -31,8 +24,7 @@ es = Elasticsearch([ES_URL], request_timeout=60)
 
 def to_dict(obj):
     """
-    Convertit une réponse Elasticsearch en dictionnaire Python.
-    Gère les ObjectApiResponse et autres types de réponses.
+    Conversion d'une réponse Elasticsearch en dictionnaire Python.
     """
     if isinstance(obj, dict):
         return obj
@@ -49,29 +41,26 @@ def to_dict(obj):
 
 
 def check_elasticsearch_connection():
-    """Vérifie la connexion à Elasticsearch"""
     try:
         if es.ping():
-            print(f"✓ Connexion Elasticsearch réussie: {ES_URL}")
+            print(f"Connexion Elasticsearch réussie: {ES_URL}")
             print(f"  Version: {es.info()['version']['number']}")
             return True
         else:
-            print("✗ Impossible de se connecter à Elasticsearch")
+            print("Impossible de se connecter à Elasticsearch")
             return False
     except Exception as e:
-        print(f"✗ Erreur de connexion à Elasticsearch: {e}")
+        print(f"Erreur de connexion à Elasticsearch: {e}")
         print(f"  Assurez-vous qu'Elasticsearch est démarré sur {ES_URL}")
         return False
 
 
 def create_index_with_custom_analyzer(index_name: str, num_shards: int = 1):
     """
-    Crée un index Elasticsearch avec un analyzer personnalisé
-    qui reproduit le preprocessing Python:
     - lowercase
     - remove punctuation
     - remove stopwords
-    - stemming (approximation de lemmatization)
+    - stemming 
     """
     
     # Supprimer l'index s'il existe
@@ -80,23 +69,21 @@ def create_index_with_custom_analyzer(index_name: str, num_shards: int = 1):
         print(f"  Index '{index_name}' supprimé")
     
     # Définition de l'analyzer personnalisé
-    # Note: Elasticsearch n'a pas de lemmatization native comme spaCy,
-    # on utilise le stemming comme approximation
     index_settings = {
         "settings": {
             "number_of_shards": num_shards,
-            "number_of_replicas": 0,  # Pas de réplicas pour les tests
+            "number_of_replicas": 0,  
             "analysis": {
                 "analyzer": {
                     "custom_corpus_analyzer": {
                         "type": "custom",
                         "tokenizer": "standard",
                         "filter": [
-                            "lowercase",                    # Unification de la casse
+                            "lowercase",                    
                             "asciifolding",                 # Suppression des accents
                             "punctuation_remover",          # Suppression de la ponctuation
                             "stop",                         # Suppression des stopwords
-                            "english_stemmer"               # Stemming (approximation lemmatization)
+                            "english_stemmer"               
                         ]
                     }
                 },
@@ -129,7 +116,7 @@ def create_index_with_custom_analyzer(index_name: str, num_shards: int = 1):
     
     # Création de l'index
     es.indices.create(index=index_name, body=index_settings)
-    print(f"✓ Index '{index_name}' créé avec {num_shards} shard(s)")
+    print(f"Index '{index_name}' créé avec {num_shards} shard(s)")
     
     return index_name
 
@@ -182,7 +169,7 @@ def visualize_segments(index_name: str):
     
     segments = es.indices.segments(index=index_name)
     
-    # Convertir en dictionnaire si nécessaire
+    # Convertir en dictionnaire 
     segments_dict = to_dict(segments)
     
     print("\nSegments de l'index:")
@@ -218,7 +205,6 @@ def visualize_segments(index_name: str):
     print("- Les segments sont les unités de stockage d'Elasticsearch")
     print("- Chaque segment est un index inversé immutable")
     print("- Plus de segments = plus de fichiers à gérer, mais meilleure parallélisation")
-    print("- _forcemerge réduit le nombre de segments pour optimiser les performances")
 
 
 def visualize_stats(index_name: str):
@@ -310,7 +296,7 @@ def index_documents_with_multiple_segments(index_name: str, documents: list, bat
         ]
         
         bulk(es, actions)
-        # Refresh après chaque batch pour créer un nouveau segment
+        # Refresh 
         es.indices.refresh(index=index_name)
     
     return total_docs
@@ -325,7 +311,7 @@ def measure_indexing_time(num_shards: int, documents: list):
     # Créer l'index
     create_index_with_custom_analyzer(index_name, num_shards)
     
-    # Mesurer le temps d'indexation
+    #Mesurer le temps d'indexation
     # Utiliser indexation par batches pour créer plusieurs segments
     t0 = time.perf_counter()
     num_docs = index_documents_with_multiple_segments(index_name, documents, batch_size=3)
@@ -333,7 +319,7 @@ def measure_indexing_time(num_shards: int, documents: list):
     
     indexing_time = t1 - t0
     
-    # Obtenir la taille disque
+    #Obtenir la taille disque
     stats = es.indices.stats(index=index_name)
     stats_dict = to_dict(stats)
     disk_size = stats_dict["indices"][index_name]["total"]["store"]["size_in_bytes"]
@@ -366,7 +352,7 @@ def measure_forcemerge_impact(index_name: str):
     print(f"\n  Exécution de _forcemerge...")
     es.indices.forcemerge(index=index_name, max_num_segments=1, wait_for_completion=True)
     
-    # Attendre que le merge soit terminé et rafraîchir
+    #rafraîchir
     es.indices.refresh(index=index_name)
     
     # Taille après forcemerge
@@ -435,14 +421,10 @@ def compare_with_manual_indexing(documents: list):
 
 
 def main():
-    """
-    Fonction principale pour Partie 3
-    """
     print("="*60)
     print("PARTIE 3: INDEXATION AVEC ELASTICSEARCH")
     print("="*60)
     
-    # Vérifier la connexion
     if not check_elasticsearch_connection():
         return
     
@@ -529,16 +511,16 @@ PARALLÉLISATION:
 - Notre implémentation utilise multiprocessing mais reste limitée à un seul nœud
 
 AVANTAGES ELASTICSEARCH:
-✓ Gestion automatique de la compression, maintenance, et parallélisation
-✓ Scalabilité horizontale (multi-nœuds)
-✓ Optimisations avancées (caching, query optimization)
-✓ Support de fonctionnalités avancées (faceting, aggregations, etc.)
+-Gestion automatique de la compression, maintenance, et parallélisation
+- Scalabilité horizontale (multi-nœuds)
+- Optimisations avancées (caching, query optimization)
+- Support de fonctionnalités avancées (faceting, aggregations, etc.)
 
 AVANTAGES IMPLÉMENTATION MANUELLE:
-✓ Contrôle total sur les algorithmes
-✓ Pas de dépendance externe
-✓ Compréhension approfondie des mécanismes internes
-✓ Légèreté pour de petits corpus
+- Contrôle total sur les algorithmes
+- Pas de dépendance externe
+- Compréhension approfondie des mécanismes internes
+- Légèreté pour de petits corpus
     """)
     
     # Nettoyage
